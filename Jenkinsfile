@@ -2,28 +2,35 @@ pipeline {
   agent none
   stages {
     stage('Test') {
-      agent {
-        kubernetes {
-          yamlFile 'nodejs-pod.yaml'
-        }
+      when {
+        beforeAgent true
+        not { branch 'main' }
       }
-
+      agent { label 'nodejs-app' }
       steps {
-        sh 'java -version'
         container('nodejs') {
           echo 'Hello World!'   
           sh 'node --version'
         }
       }
     }
-    stage('Build and Push Image') {
-        when {
-          beforeAgent true
-          branch 'main'
+    stage('Main Branch Stages') {
+      when {
+        beforeAgent true
+        branch 'main'
+      }
+      stages {
+        stage('Build and Push Image') {
+          steps {
+            echo "TODO - build and push image"
+          }
         }
-        steps {
-          echo "TODO - build and push image"
+        stage('Deploy') {
+          steps {
+            echo "TODO - deploy"
+          }
         }
+      }
     }
   }
 }
